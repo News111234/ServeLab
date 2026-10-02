@@ -133,8 +133,16 @@ class GlooCollective(Collective):
             torch.distributed.init_process_group(
                 backend="gloo", rank=rank, world_size=world_size,
                 init_method=init_method)
-        self.rank = torch.distributed.get_rank()
-        self.world_size = torch.distributed.get_world_size()
+        self._rank = torch.distributed.get_rank()
+        self._world_size = torch.distributed.get_world_size()
+
+    @property
+    def rank(self) -> int:
+        return self._rank
+
+    @property
+    def world_size(self) -> int:            # override the plain attribute
+        return self._world_size
 
     def all_reduce_sum(self, t: torch.Tensor) -> torch.Tensor:
         t = t.contiguous()
@@ -147,8 +155,8 @@ class GlooCollective(Collective):
         torch.distributed.all_gather(parts, t.contiguous())
         return torch.cat(parts, dim=dim)
 
-    def broadcast_object(self, obj, src: int = 0):
-        box = [obj if self.rank == src else None]
+    def sync_object(self, obj, src: int = 0):
+        box = [obj if self._rank == src else None]
         torch.distributed.broadcast_object_list(box, src=src)
         return box[0]
 

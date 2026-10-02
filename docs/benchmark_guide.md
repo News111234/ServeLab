@@ -80,3 +80,33 @@ python examples/run_simulator.py --trace Azure_LLM_Inference_Trace_2024.parquet
 - 典型结论表述："ServeLab 参考实现的绝对吞吐为 vLLM 的 X%（预期内，
   参考实现），但策略趋势一致：prefix cache 开启后 TTFT p50 下降 Y%，
   与模拟器预测误差 Z%。" —— 这正是 roadmap #5 的校准故事。
+
+## 6. 模拟器批量实验与成本模型校准（v0.2.0 新增）
+
+```bash
+# 网格扫描：4 种路由 × 3 个请求率 × 2 种副本数 → results/sweep.csv
+python -m servelab.simulator.sweep --out results/routing_sweep.csv     --num-requests 500 --seed 42
+
+# 换 trace 只改 trace 参数源（见 examples/run_simulator.py 的 load_trace）
+```
+
+CSV 每行一次仿真（固定 seed 可复现），字段含 TTFT/TPOT 分位数、goodput、
+Jain 指数、cache hit、preemptions——直接可画 goodput-负载曲线与路由对比图。
+
+成本模型校准（roadmap #5 的工具）：
+
+```python
+from servelab.simulator.calibration import CostCalibrator, Measurement
+from servelab.simulator.model_cost import MODEL_PRESETS
+
+cal = CostCalibrator(MODEL_PRESETS["qwen2.5-7b"])
+# measurement 来源：benchmark_serving 实测或逐 step 计时落盘的 CSV
+# cal.add(Measurement(prefill_tokens, decode_seqs, kv_tokens), measured_seconds)
+fit = cal.fit()
+print(fit)                      # flops_eff / bw_eff / launch_overhead_ms / mape
+sim_gpu = fit.gpu_spec()        # 直接喂给 SimConfig.gpu
+```
+
+拟合是三参数交替最小二乘（regime 归类 → 各自最小二乘 → 中位数残差更新
+overhead）。用真实测量时，务必让样本同时覆盖 prefill 主导与 decode 主导
+两类 batch，否则对应 regime 的常数不可辨识。

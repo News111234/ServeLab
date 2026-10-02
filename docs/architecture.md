@@ -114,6 +114,11 @@ ServeLab 两种都实现了（`chunked_prefill` 开关），并额外暴露
 | `test_simulator.py` | 全请求完成/指标口径/路由对比/PD/MoE 重平衡 |
 | `test_quant.py` | 量化往返误差/池读写/块行映射/W8A8 |
 | `test_engine_smoke.py` | 端到端一致性（4 配置组合）/前缀命中/抢占路径/不变量 |
+| `test_parallel.py` | 分片规则往返/TP 模型对拍/TP=2/TP=4 引擎与单卡逐 token 一致 |
+| `test_speculative.py` | 自投机全接受+摊销/prompt-lookup/随机 draft 纠正/采样确定性/边界 |
+| `test_swap_offload.py` | swap 往返/块表恢复/调度进度保持/驱逐归档+恢复/引擎 swap e2e |
+| `test_calibration_sweep.py` | 校准器真值恢复/最小样本守卫/sweep 网格行 |
+| `test_triton_kernels.py` | Triton 与 torch 对拍（GPU 环境才启用，其余机器自动 skip） |
 
 ## 8. 张量并行（TP）
 

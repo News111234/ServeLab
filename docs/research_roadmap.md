@@ -49,7 +49,7 @@
 
 ## #4 Chunked-Prefill 与 PD 分离的联合调度
 
-- **插槽**: `engine/scheduler.py`（chunk 预算策略）+ `simulator/cluster.py`（PD）
+- **插槽**: `engine/scheduler.py`（chunk 预算策略；SWAP 抢占已实现）+ `simulator/cluster.py`（PD 已内置）
 - **动机**: Sarathi-Serve 证明混批好、DistServe 证明分离好——但"哪些请求该
   走分离、哪些该混批"的**混合部署调度**还是空白。
 - **做法**: 在模拟器里同时放 mixed 副本与 PD 对，按请求特征（长度/时延 SLO）
@@ -60,8 +60,9 @@
 
 ## #5 模拟器-实机 gap 校准（方法论/benchmark 论文）
 
-- **插槽**: `simulator/model_cost.py::GpuSpec`（flops_eff/bw_eff 可拟合）+
-  `bench/benchmark_serving.py`（提供实测数据）
+- **插槽**: `simulator/calibration.py::CostCalibrator`（**已内置**，三参数交替最小二乘，
+  拟合结果直接生成 `GpuSpec`）+ `bench/benchmark_serving.py`（提供实测数据）
+  + `servelab/simulator/sweep.py`（批量实验出 CSV，**已内置**）
 - **动机**: 所有 serving 论文都有模拟器，但没人交代"模拟器误差多少、怎么校准"。
   做一套"在同一 trace 上跑模拟器与真机 vLLM/ServeLab，拟合有效算力/带宽/
   开销三参数，报告各指标的预测误差"就是一篇实打实的 benchmark 短文。

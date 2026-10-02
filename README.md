@@ -87,7 +87,7 @@ python -m servelab.serving.openai_server --model /path/to/model
 ## 两条使用路径
 
 **面试路径**（1~2 周）：先读 [docs/interview_guide.md](docs/interview_guide.md) ——
-JD 每一条都映射到具体文件与"怎么讲"；跑通 43 个测试；用自己的话复述
+JD 每一条都映射到具体文件与"怎么讲"；跑通 62 个测试；用自己的话复述
 PagedAttention / chunked prefill / radix cache 三个机制。
 
 **论文路径**（1~3 个月）：先读 [docs/research_roadmap.md](docs/research_roadmap.md) ——

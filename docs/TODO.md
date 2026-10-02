@@ -28,7 +28,7 @@
       radix 锁与驱逐
 - [ ] 白板练习：画 block table / slot 公式 `block_id*block_size+offset`；
       画 radix 树匹配与锁
-- [ ] 三个现场 demo 彩排：`pytest tests -q`（43 passed）、
+- [ ] 三个现场 demo 彩排：`pytest tests -q`（62 passed, 2 skipped）、
       `python examples/run_simulator.py --compare-routers`、
       `python examples/moe_sim.py`
 - [ ] 准备 2 个调试故事（素材见 `docs/PROGRESS.md` 的缺陷记录节）：

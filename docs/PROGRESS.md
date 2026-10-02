@@ -1,6 +1,6 @@
 # ServeLab 项目进展
 
-> 状态：**v0.1.0 · 全部计划内功能已实现并通过本机验证**
+> 状态：**v0.2.0 · 全部计划内功能已实现并通过本机验证**
 > 环境：Windows 11 / RTX 4050 Laptop 6GB / Anaconda Python 3.12.7（torch 2.13 CPU 版）
 > 配套文档：[TODO.md](TODO.md)（下一步）· [architecture.md](architecture.md)（代码导读）·
 > [research_roadmap.md](research_roadmap.md)（论文选题）· [interview_guide.md](interview_guide.md)（面试映射）
@@ -19,7 +19,7 @@
 | M8 | Bench 与应用 | benchmark_serving（fixed/poisson 负载）、kernel_bench、三份示例脚本、OpenAI 兼容 server（非流式） | ✅ 完成 |
 | M9 | 测试体系 | 62 tests（43→62）+ 2 个 GPU-gated skip；引擎四配置一致性 + TP 一致性 + 投机解码一致性作为验收标准 | ✅ 完成 |
 | M10 | 文档 | README、代码导读、论文选题 ×6、面试映射、bench 指南、trace 清单、TODO/进展（本文件） | ✅ 完成 |
-| M11 | **张量并行** | Megatron 切分规则（列/行/词表并行）、SPMD 引擎、Simulated(线程)+Gloo(进程) 双后端、集合通信毒化机制；TP=2/4 与单卡输出逐 token 一致 | ✅ 完成（gloo 后端待 GPU 机器验证） |
+| M11 | **张量并行** | Megatron 切分规则（列/行/词表并行）、SPMD 引擎、Simulated(线程)+Gloo(进程) 双后端、集合通信毒化机制；TP=2/4 与单卡输出逐 token 一致 | ✅ 完成（gloo 双进程已在 CPU 验证输出一致；NCCL 待 GPU） |
 | M12 | **投机解码** | SimpleKVRunner、Model/PromptLookup 提议器、greedy 验证 + 拒绝采样、SpecStats（接受率/前向调用摊销）；greedy 输出与普通解码严格一致 | ✅ 完成 |
 | M13 | **KV 层级** | SWAP 抢占模式（CPU 换出/换回，进度零丢失）、驱逐归档（CPUKVOffloader）+ 前缀未命中自动恢复（radix.attach） | ✅ 完成 |
 | M14 | **研究工具链** | 成本模型参数校准器（三参数交替最小二乘）、sweep 实验流水线（网格→CSV）、调试脚本归档 scripts/debug/ | ✅ 完成 |
@@ -42,9 +42,13 @@
 - 示例脚本实跑通过：`run_engine.py`、`run_simulator.py --compare-routers`、`moe_sim.py`、
   模拟 TP 引擎组（TP=2/4 与单卡逐 token 一致）
 
+**已验证（补充）**：gloo 真多进程 TP=2（`examples/run_tp_gloo.py`，CPU 双进程，
+输出与单卡逐 token 一致）——文档审查时修复了 gloo 后端的两个 bug 后通过。
+
 **待验证（需要其他环境）：**
 
 - Triton kernel 对拍（`tests/test_triton_kernels.py`，需 Linux+GPU+triton）
+- NCCL 后端 TP（GPU 机器；接口同 gloo，零代码改动）
 - CUDA torch 实机吞吐（本机 torch 为 CPU 版；4050 装 CUDA 版后即可）
 - 真实大模型端到端（Qwen2.5-0.5B/7B）与 `benchmark_serving` 实测
 - OpenAI server（需 `pip install fastapi uvicorn`）
@@ -116,14 +120,20 @@
     tokens 列表从首个采样 token 起步，proposer 拿到的 context 只有 1 个 token，
     提议全错。修复：tokens 从 prompt 起步、返回时切片输出部分；顺带修复
     跨 max_tokens 边界的截断与 runner 复用时的缓存重置。
+14. **gloo 后端两个 bug**（`parallel/layers.py`，文档审查实机运行 `run_tp_gloo.py`
+    时发现）：① `self.rank = get_rank()` 触发基类 rank property 的 no-setter
+    错误（模拟后端把 rank 做成了线程局部 property）→ 改为子类 property 覆盖；
+    ② 忘记重写 `sync_object`，继承了单进程默认语义，非 rank0 进程拿到 None。
+    修复后 CPU 双进程 TP=2 输出与单卡逐 token 一致。
+    教训：**文档里所有"待验证"标记都是欠账，实机跑一遍才是验收**。
 
 ## 5. 已知限制（= TODO 的来源）
 
 - Triton kernel 未在 GPU 实测；flash-decoding split-K、CUDA Graph 未实现
 - SWAP 换出/换回走 float32 语义（经 read/write 往返），量化 KV 的 swap 有一次
   反量化-重量化；swap-in 失败率与前缀驱逐的交互已处理但未做系统化压测
-- TP 引擎为 SPMD 确定性调度（无独立 driver/worker 进程拆分）；无 PP/EP 的
-  引擎级实现（EP 有模拟器层）
+- TP 引擎为 SPMD 确定性调度（无独立 driver/worker 进程拆分）；gloo 后端已在
+  CPU 双进程验证，NCCL 后端待 GPU；无 PP/EP 的引擎级实现（EP 有模拟器层）
 - 投机解码是单序列模块（未与 continuous batching 融合，cf. vLLM V1 spec-decode）
 - server 非流式；无 beam search / parallel sampling；不支持 AWQ/GPTQ 权重
 - radix 驱逐用线性查找（研究规模够用，生产规模需叶子堆）
@@ -137,7 +147,8 @@
   ② 投机解码（提议/验证/拒绝采样完整算法，greedy 输出严格一致，含交叉验证
   发现并修复的 KV pool fp16 真 bug）；③ KV 层级闭环（SWAP 抢占 + 驱逐归档 +
   前缀自动恢复）；④ 研究工具链（成本模型校准器 + sweep 实验流水线）。
-  测试 43→62。新缺陷记录 #9~#13。
+  测试 43→62。新缺陷记录 #9~#13。文档审查补丁：修复 gloo 后端两 bug 并在
+  CPU 双进程验证 TP=2 与单卡一致（缺陷 #14）。
 - **v0.1.0（2026-10-02）**：首次完整交付。三层架构（核心/引擎/模拟器）+ Triton
   算子 + bench + 示例 + server 骨架 + 43 测试全绿 + 六份文档。
   已知缺陷 8 项全部修复并有测试锚定。
