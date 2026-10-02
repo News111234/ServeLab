@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "servelab"
+version = "0.1.0"
+description = "ServeLab: a research-oriented miniature LLM serving stack (vLLM/SGLang-style engine + trace-driven cluster simulator) for inference-infra algorithm research"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "ServeLab Authors" }]
+keywords = ["llm", "inference", "serving", "vllm", "sglang", "kv-cache", "simulator"]
+
+dependencies = [
+    "numpy>=1.24",
+    "tabulate>=0.9",
+]
+
+[project.optional-dependencies]
+engine = [
+    "torch>=2.1",
+    "safetensors>=0.4",
+]
+tokenizer = ["transformers>=4.40"]
+server = ["fastapi>=0.110", "uvicorn>=0.29"]
+sim = ["pandas>=2.0", "pyarrow>=14"]   # for parquet traces (Azure LLM inference trace)
+dev = ["pytest>=7.0"]
+all = ["torch>=2.1", "safetensors>=0.4", "transformers>=4.40", "fastapi>=0.110", "uvicorn>=0.29", "pandas>=2.0", "pyarrow>=14", "pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+include = ["servelab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

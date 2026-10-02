@@ -1,0 +1,18 @@
+# 最小依赖（模拟器 + torch-free 全部功能）
+numpy>=1.24
+tabulate>=0.9
+
+# 引擎（真实推理）需要
+# torch>=2.1
+# safetensors>=0.4
+
+# 真实模型 tokenizer / 在线下载需要
+# transformers>=4.40
+
+# OpenAI 兼容 server 需要
+# fastapi>=0.110
+# uvicorn>=0.29
+
+# 加载 parquet 格式 trace（Azure LLM Inference Trace）需要
+# pandas>=2.0
+# pyarrow>=14
