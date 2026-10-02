@@ -116,5 +116,5 @@ servelab/
 └── serving/      openai_server
 tests/            62 tests: 块管理/前缀树/调度/模拟器/量化/TP/投机/swap/校准
 docs/             architecture · research_roadmap · interview_guide · interview_qa ·
-                  knowledge_checklist · self_test · benchmark_guide · TODO · PROGRESS
+                  knowledge_checklist · self_test · resume_guide · benchmark_guide · TODO · PROGRESS
 ```

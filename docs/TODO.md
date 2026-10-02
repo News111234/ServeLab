@@ -23,6 +23,7 @@
 
 ## P0 面试准备
 
+- [ ] 按 `docs/resume_guide.md` 更新简历（版本 A 投 infra 岗），逐条过防守题号
 - [ ] 背 `docs/interview_qa.md`（预设问题+答案，先背 Q0.1 与所有 ⭐⭐⭐ 题）
 - [ ] 过 `docs/knowledge_checklist.md` 打勾清单，讲不出的回架构文档复习
 - [ ] 闭卷做 `docs/self_test.md` 选择填空卷（50 题），≥85 分才算过关
