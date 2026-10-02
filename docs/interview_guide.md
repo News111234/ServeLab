@@ -1,6 +1,8 @@
 # 面试指南：JD 每一条 ↔ 代码位置 ↔ 讲法
 
 > 用法：面试前按 JD 逐条过。每条给出「代码入口 → 你要能讲的一句话 → 可能的追问」。
+> **可背诵的完整问答见 [interview_qa.md](interview_qa.md)**，领域知识打勾清单见
+> [knowledge_checklist.md](knowledge_checklist.md)。
 > 原则：**每个机制都亲手实现过**，所以从"用过"升级到"能写出 v0 并说出与 v1 的差异"。
 
 ## 岗位职责 1：vLLM/SGLang 推理系统研发
