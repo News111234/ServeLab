@@ -88,7 +88,8 @@ python -m servelab.serving.openai_server --model /path/to/model
 
 **面试路径**（1~2 周）：先读 [docs/interview_guide.md](docs/interview_guide.md)，题目逐条过
 [docs/interview_qa.md](docs/interview_qa.md)（预设问题+背诵答案）与
-[docs/knowledge_checklist.md](docs/knowledge_checklist.md)（领域知识打勾清单）——
+[docs/knowledge_checklist.md](docs/knowledge_checklist.md)（领域知识打勾清单），
+最后用 [docs/self_test.md](docs/self_test.md) 的选择填空卷闭卷自测——
 JD 每一条都映射到具体文件与"怎么讲"；跑通 62 个测试；用自己的话复述
 PagedAttention / chunked prefill / radix cache 三个机制。
 
@@ -115,5 +116,5 @@ servelab/
 └── serving/      openai_server
 tests/            62 tests: 块管理/前缀树/调度/模拟器/量化/TP/投机/swap/校准
 docs/             architecture · research_roadmap · interview_guide · interview_qa ·
-                  knowledge_checklist · benchmark_guide · TODO · PROGRESS
+                  knowledge_checklist · self_test · benchmark_guide · TODO · PROGRESS
 ```

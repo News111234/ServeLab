@@ -2,7 +2,8 @@
 
 > 用法：面试前按 JD 逐条过。每条给出「代码入口 → 你要能讲的一句话 → 可能的追问」。
 > **可背诵的完整问答见 [interview_qa.md](interview_qa.md)**，领域知识打勾清单见
-> [knowledge_checklist.md](knowledge_checklist.md)。
+> [knowledge_checklist.md](knowledge_checklist.md)，闭卷自测卷见
+> [self_test.md](self_test.md)（选择+填空 50 题，目标 ≥85 分）。
 > 原则：**每个机制都亲手实现过**，所以从"用过"升级到"能写出 v0 并说出与 v1 的差异"。
 
 ## 岗位职责 1：vLLM/SGLang 推理系统研发

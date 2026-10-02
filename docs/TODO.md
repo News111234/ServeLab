@@ -25,6 +25,7 @@
 
 - [ ] 背 `docs/interview_qa.md`（预设问题+答案，先背 Q0.1 与所有 ⭐⭐⭐ 题）
 - [ ] 过 `docs/knowledge_checklist.md` 打勾清单，讲不出的回架构文档复习
+- [ ] 闭卷做 `docs/self_test.md` 选择填空卷（50 题），≥85 分才算过关
 - [ ] 按 `docs/interview_guide.md` 逐条过 JD，每条能脱稿讲 1 分钟
 - [ ] 通读 `docs/architecture.md` + 对应源码，重点：kv_cache 三层、scheduler 三阶段、
       radix 锁与驱逐
