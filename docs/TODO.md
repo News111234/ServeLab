@@ -5,12 +5,12 @@
 
 ## P0 环境与基础设施
 
-- [ ] `pip install -e ".[all]"`（anaconda 的 Python 3.12 环境）
+- [x] ~~`pip install -e ".[all]"`~~（anaconda 的 Python 3.12 环境）
 - [ ] 安装 CUDA 版 torch（本机 RTX 4050 6GB）：
       `pip install torch --index-url https://download.pytorch.org/whl/cu126`
       然后 `python -c "import torch; print(torch.cuda.is_available())"` 应为 True
-- [ ] 初始化 git 仓库并做首次提交：`git init && git add -A && git commit -m "ServeLab v0.1.0"`
-- [ ] 上传 GitHub（简历附链接；README 的徽章/截图后补）
+- [x] ~~初始化 git 仓库并做首次提交~~（v0.2.0，commit 31a9163）
+- [x] ~~上传 GitHub~~：https://github.com/News111234/ServeLab （main 分支）
 - [ ] 下载真实小模型并跑通引擎：`python examples/run_engine.py --model <Qwen2.5-0.5B路径>`
 - [ ] 下载 trace 数据放入 `traces/`（清单见 `traces/README.md`）：
       ShareGPT json、Azure LLM Inference Trace、BurstGPT csv
