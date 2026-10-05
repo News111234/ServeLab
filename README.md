@@ -31,6 +31,12 @@ ServeLab 用 ~4000 行可读代码复刻了 vLLM / SGLang / LMCache 的核心机
 | 面试证明"做过优化" | kernel bench（Triton paged attention vs torch）、serving bench（TTFT/TPOT/goodput）、profiling 指引 |
 | 后续发论文 | 模拟器 + 可插拔策略 + 真实 trace 加载器；策略代码可在模拟器与真实引擎间无缝迁移 |
 
+## 从哪开始看？
+
+**先读 [docs/reading_guide.md](docs/reading_guide.md)** —— 按"一个请求的一生"主线
+设计的分阶段精读路线（阶段 0 跑起来 → 阶段 2 核心三件套 → 阶段 4 进阶选读），
+每阶段配动手实验与过关标准，总预算 2 周。
+
 ## 快速开始
 
 ```bash
@@ -116,5 +122,6 @@ servelab/
 └── serving/      openai_server
 tests/            62 tests: 块管理/前缀树/调度/模拟器/量化/TP/投机/swap/校准
 docs/             architecture · research_roadmap · interview_guide · interview_qa ·
-                  knowledge_checklist · self_test · resume_guide · benchmark_guide · TODO · PROGRESS
+                  reading_guide · knowledge_checklist · self_test · interview_qa · resume_guide ·
+                  benchmark_guide · architecture · research_roadmap · TODO · PROGRESS
 ```
