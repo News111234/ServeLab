@@ -82,13 +82,13 @@ def run_poisson(engine, workloads, rate: float):
     import random
     rng = random.Random(7)
     results, next_arrival = [], time.monotonic()
-    t0 = time.monotonic()
+    time.monotonic()
     for i, w in enumerate(workloads):
         # pace arrivals against wall clock while stepping the engine
         while time.monotonic() < next_arrival:
             outs = engine.step()
             results.extend(outs)
-        rid = engine.add_request(
+        engine.add_request(
             prompt=w.get("prompt"),
             prompt_token_ids=w.get("prompt_token_ids"),
             sampling_params=SamplingParams(max_tokens=w["expected_output_len"],

@@ -11,7 +11,6 @@ import csv
 import itertools
 import os
 import time
-from typing import List
 
 from .cluster import ClusterSimulator, SimConfig
 from .metrics import compute_metrics

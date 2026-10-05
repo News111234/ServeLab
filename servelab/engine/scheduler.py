@@ -12,8 +12,8 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Protocol, Set
 
 from ..config import CacheConfig, SchedulerConfig
-from ..kv_cache.manager import AllocStatus, BlockManager
-from .sequence import FINISHED_STATES, Sequence, SequenceStatus
+from ..kv_cache.manager import BlockManager
+from .sequence import Sequence, SequenceStatus
 
 
 class OutputLengthPredictor(Protocol):
@@ -246,10 +246,16 @@ class Scheduler:
     def _plan_prefill_chunk(self, seq: Sequence, budget: int,
                             out: SchedulerOutput) -> Optional[int]:
         """Plan (and pre-allocate) the next chunk for a partial prefill.
-        Returns chunk size, or None if the seq was deferred / preempted."""
+        Returns chunk size, or None if the seq was deferred / preempted.
+
+        chunked_prefill=True clamps to the token budget (vLLM-v1 mixed batch);
+        chunked_prefill=False follows the v0 semantics of scheduling the whole
+        remaining prompt in one go (even if it exceeds the budget)."""
         remaining = seq.remaining_prompt_tokens()
-        chunk = remaining if not self.cfg.chunked_prefill else min(remaining, budget)
-        chunk = max(1, min(chunk, budget))
+        if self.cfg.chunked_prefill:
+            chunk = max(1, min(remaining, budget))
+        else:
+            chunk = max(1, remaining)
         got = self.bm.allocate_slots(seq.request_id,
                                      seq.num_computed_tokens + chunk)
         if got is None:

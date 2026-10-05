@@ -11,7 +11,7 @@ from __future__ import annotations
 import time
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 if TYPE_CHECKING:                       # avoid policies <-> radix import cycle
     from .radix import RadixNode

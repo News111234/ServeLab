@@ -1,12 +1,10 @@
 """End-to-end simulator tests (torch-free)."""
 
-import pytest
 
 from servelab.simulator.cluster import ClusterSimulator, SimConfig
 from servelab.simulator.metrics import compute_metrics
 from servelab.simulator.model_cost import GPU_PRESETS, MODEL_PRESETS
-from servelab.simulator.predictor import OraclePredictor, build_predictor
-from servelab.simulator.router import build_router
+from servelab.simulator.predictor import build_predictor
 from servelab.simulator.trace import make_synthetic_trace
 from servelab.simulator.moe import rebalanced_sim
 

@@ -11,7 +11,7 @@ granularity is itself a research axis (paper hook: per-tensor / per-block /
 per-token / per-channel trade-offs, cf. KIVI, KVQuant).
 """
 
-from typing import List, Sequence, Tuple
+from typing import Sequence, Tuple
 
 import torch
 

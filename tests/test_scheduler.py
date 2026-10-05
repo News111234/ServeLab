@@ -4,7 +4,7 @@ The driver mimics engine.step(): schedule -> "execute" (advance
 num_computed, sample fake tokens) -> update_after_exec.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from servelab.config import CacheConfig, SchedulerConfig
 from servelab.engine.sampling_params import SamplingParams

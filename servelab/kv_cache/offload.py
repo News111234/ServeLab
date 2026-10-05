@@ -12,7 +12,7 @@ the engine so it can be unit-tested and reused by the simulator's cost model.
 
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from .pool import KVCachePool
 
@@ -37,11 +37,12 @@ class CostAwareOffloadPolicy(OffloadPolicy):
     read amortization threshold. Paper hook: replace the threshold with a
     learned model of future reuse probability (workload-aware admission)."""
 
-    def __init__(self, min_tokens: int = 256):
+    def __init__(self, min_tokens: int = 256, block_size: int = 16):
         self.min_tokens = min_tokens
+        self.block_size = block_size
 
     def admit(self, key, num_blocks, now) -> bool:
-        return num_blocks * 16 >= self.min_tokens   # assumes block_size 16
+        return num_blocks * self.block_size >= self.min_tokens
 
 
 class CPUKVOffloader:

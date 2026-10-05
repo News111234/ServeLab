@@ -1,4 +1,3 @@
-import pytest
 
 from servelab.kv_cache.manager import AllocStatus, BlockManager
 
@@ -48,10 +47,10 @@ def test_locked_blocks_not_evicted():
 
     bm.maybe_match_prefix("s2", prompt)      # locks 2 blocks
     # try to evict everything: locked blocks must survive
-    freed = bm.radix.evict(10)
+    bm.radix.evict(10)
     assert bm.radix.num_blocks == 2
     bm.radix.unlock(bm.seq_matched_nodes["s2"])
-    freed = bm.radix.evict(10)
+    bm.radix.evict(10)
     assert bm.radix.num_blocks == 0
 
 

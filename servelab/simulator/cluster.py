@@ -14,7 +14,7 @@ PD-disaggregation mode: replicas split into prefill / decode pools; KV is
 import heapq
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from ..engine.sampling_params import SamplingParams
 from ..engine.sequence import Sequence, SequenceStatus
@@ -340,7 +340,7 @@ class ClusterSimulator:
                 if not replica.has_work():
                     continue
                 finished = []
-                dt = replica.do_step(now, finished)
+                replica.do_step(now, finished)
                 for seq, end in finished:
                     self.results.append(RequestResult(
                         req_id=seq.request_id,

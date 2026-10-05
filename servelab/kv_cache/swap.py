@@ -9,7 +9,6 @@ workload question, cf. roadmap #4.
 
 from typing import Dict, List, Tuple
 
-import torch
 
 from .pool import KVCachePool
 

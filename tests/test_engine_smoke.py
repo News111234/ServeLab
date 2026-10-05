@@ -10,7 +10,6 @@ import sys
 import os
 import pytest
 
-import torch
 
 sys.path.insert(0, os.path.dirname(__file__))
 from helpers_tiny_model import build_tiny_qwen2  # noqa: E402
@@ -115,7 +114,7 @@ def test_kv_growth_invariant(tiny_model):
     """Prompt sized so the table must GROW during decode; the
     computed == len-1 invariant must hold on every running seq."""
     engine = make_engine(tiny_model, num_blocks=16)
-    rid = engine.add_request(prompt_token_ids=list(range(10, 40)),   # 30 tokens
+    engine.add_request(prompt_token_ids=list(range(10, 40)),   # 30 tokens
                              sampling_params=SamplingParams(max_tokens=24,
                                                             ignore_eos=True,
                                                             temperature=0.0))

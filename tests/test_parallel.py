@@ -122,3 +122,17 @@ def test_tp_engine_generation_matches_single_gpu(tmp_path, world):
                          SamplingParams.greedy(max_tokens=10))
     got_tokens = [o.outputs[0].token_ids for o in got]
     assert got_tokens == ref_tokens
+
+
+def test_tp_engine_group_generate_reusable(tmp_path):
+    """generate() must work across repeated calls (request-id mapping)."""
+    cfg = build_tiny_qwen2(str(tmp_path / "m"))
+    mc = ModelConfig.from_hf(cfg, path=str(tmp_path / "m"))
+    group = SimulatedTPEngineGroup(mc, CacheConfig(num_blocks=32),
+                                   SchedulerConfig(max_num_seqs=4,
+                                                   max_num_batched_tokens=64),
+                                   world_size=2, seed=0)
+    first = group.generate([PROMPT], SamplingParams.greedy(max_tokens=6))
+    second = group.generate([PROMPT], SamplingParams.greedy(max_tokens=6))
+    assert first[0] is not None and second[0] is not None
+    assert first[0].outputs[0].token_ids == second[0].outputs[0].token_ids

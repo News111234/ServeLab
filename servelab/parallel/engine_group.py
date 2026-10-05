@@ -5,7 +5,7 @@ group here exercises the exact same engine code path (sharded weights, local
 KV pools, collective-synced sampling) in threads, so it runs in CI.
 """
 
-from typing import List, Optional
+from typing import List
 
 from ..config import CacheConfig, ModelConfig, SchedulerConfig
 from .layers import SimulatedCollective
@@ -55,11 +55,12 @@ class SimulatedTPEngineGroup:
 
     def generate(self, prompts: List, sampling_params, verbose: bool = False) -> list:
         results = {}
+        rids = []
         for p in prompts:
-            self.add_request(
+            rids.append(self.add_request(
                 prompt=p if isinstance(p, str) else None,
                 prompt_token_ids=None if isinstance(p, str) else list(p),
-                sampling_params=sampling_params)
+                sampling_params=sampling_params))
         while self.has_unfinished():
             for out in self.step():
                 if out is not None and out.finished:
@@ -67,4 +68,4 @@ class SimulatedTPEngineGroup:
             if verbose:
                 st = self.engines[0].stats()
                 print(f"[tp-step] running={st['running']} waiting={st['waiting']}")
-        return [results.get(f"req-{i + 1}") for i in range(len(prompts))]
+        return [results.get(rid) for rid in rids]

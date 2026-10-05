@@ -8,7 +8,6 @@ Covers the KV hierarchy story end to end at the component level:
 import sys
 import os
 
-import pytest
 import torch
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -182,3 +181,31 @@ def test_engine_swap_mode_end_to_end(tmp_path):
     assert eng.bm.stat_swap_outs > 0          # swap path actually exercised
     assert eng.bm.stat_swap_ins + eng.bm.stat_swap_ins_failed \
         == eng.bm.stat_swap_outs              # every swap-out is accounted for
+
+
+def test_engine_offload_archive_and_restore(tmp_path):
+    """Engine with enable_kv_offload: pressure evicts + archives the cached
+    prefix; a later identical prompt restores it from host (e2e)."""
+    from helpers_tiny_model import build_tiny_qwen2
+
+    from servelab.config import ModelConfig, SchedulerConfig
+    from servelab.engine.engine import LLMEngine
+    from servelab.engine.sampling_params import SamplingParams
+
+    cfg = build_tiny_qwen2(str(tmp_path / "m"))
+    mc = ModelConfig.from_hf(cfg, path=str(tmp_path / "m"))
+    eng = LLMEngine(mc,
+                    CacheConfig(num_blocks=8, enable_kv_offload=True,
+                                kv_offload_capacity_blocks=64),
+                    SchedulerConfig(max_num_seqs=4, max_num_batched_tokens=64),
+                    seed=0, device="cpu")
+    prompt = list(range(10, 42))            # 32 tokens = 2 full blocks (bs=16)
+    eng.generate([prompt], SamplingParams.greedy(max_tokens=1))
+    # pressure with distinct prompts to force eviction of the archived prefix
+    for j in range(4):
+        eng.generate([[50 + j] + list(range(60, 92))],
+                     SamplingParams.greedy(max_tokens=1))
+    assert eng.bm.offloader is not None
+    assert eng.bm.offloader.stat_offload_blocks > 0
+    hit = eng.bm.maybe_match_prefix("restore-check", prompt + [1, 2])
+    assert hit == 32, f"expected host-restored prefix hit, got {hit}"

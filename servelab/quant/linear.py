@@ -7,7 +7,6 @@ dequantize to fp16 for the matmul so the numerics can be validated anywhere.
 The kernel itself is a paper/bench extension (see docs/research_roadmap.md).
 """
 
-from typing import Optional
 
 import torch
 import torch.nn as nn

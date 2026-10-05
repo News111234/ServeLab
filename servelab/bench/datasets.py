@@ -2,7 +2,7 @@
 
 import json
 import random
-from typing import List, Optional
+from typing import List
 
 
 def sample_synthetic_prompts(num_prompts: int, input_mean: int = 200,

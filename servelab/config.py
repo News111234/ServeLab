@@ -81,6 +81,8 @@ class CacheConfig:
     kv_cache_dtype: str = "auto"           # "auto" | "float16" | "fp8" | "int8"
     eviction_policy: str = "lru"           # lru | lfu | costaware  (paper hook)
     watermark: float = 0.01                # keep this fraction of blocks free
+    enable_kv_offload: bool = False        # archive evicted prefix blocks on host
+    kv_offload_capacity_blocks: int = 8192
 
 
 @dataclass

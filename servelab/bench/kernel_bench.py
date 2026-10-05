@@ -31,7 +31,7 @@ def bench_paged_decode(batch=32, ctx=1024, num_heads=32, num_kv_heads=8,
     k = torch.randn(num_blocks * block_size, num_kv_heads, head_dim,
                     dtype=dtype, device=device)
     v = torch.randn_like(k)
-    tables, lens, metas = [], [], []
+    tables, lens, _metas = [], [], []
     for i in range(batch):
         n_blocks = ctx // block_size
         tables.append(list(range(i * n_blocks, (i + 1) * n_blocks)))

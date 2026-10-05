@@ -12,10 +12,10 @@ from typing import Callable, Dict, List, Optional
 
 import torch
 
-from ..config import CacheConfig, EngineConfig, ModelConfig, SchedulerConfig
+from ..config import CacheConfig, ModelConfig, SchedulerConfig
 from ..kv_cache.manager import BlockManager
 from ..kv_cache.pool import KVCachePool
-from ..models.decoder import DecoderModel, SeqMeta, flat_rows
+from ..models.decoder import DecoderModel, SeqMeta
 from ..models.loader import load_model
 from ..parallel.layers import shard_state_dict_tp
 from ..parallel.tp_model import TPDecoderModel
@@ -109,6 +109,11 @@ class LLMEngine:
             kv_cache_dtype=cache_config.kv_cache_dtype,
         )
         self.model.block_size = cache_config.block_size
+        offloader = None
+        if cache_config.enable_kv_offload and cache_config.enable_prefix_caching:
+            from ..kv_cache.offload import CPUKVOffloader
+            offloader = CPUKVOffloader(
+                capacity_blocks=cache_config.kv_offload_capacity_blocks)
         self.bm = BlockManager(
             num_blocks=num_blocks,
             block_size=cache_config.block_size,
@@ -116,6 +121,7 @@ class LLMEngine:
             eviction_policy=cache_config.eviction_policy,
             watermark=cache_config.watermark,
             swap_space=swap_space,
+            offloader=offloader,
             pool=self.pool,
         )
 

@@ -126,6 +126,14 @@
     ② 忘记重写 `sync_object`，继承了单进程默认语义，非 rank0 进程拿到 None。
     修复后 CPU 双进程 TP=2 输出与单卡逐 token 一致。
     教训：**文档里所有"待验证"标记都是欠账，实机跑一遍才是验收**。
+15. **代码审计修复**（ruff 全量静态检查 + 人工审查）：① 39 个静态问题清零
+    （32 未使用导入 + 7 未使用变量）；② `SimulatedTPEngineGroup.generate` 用
+    硬编码 request_id 假设映射结果，同一实例第二次调用返回 None → 收集实际
+    rid（回归测试覆盖）；③ offloader 从未接入引擎（组件有能力、引擎没接线）
+    → CacheConfig 新增 `enable_kv_offload`，驱逐归档 + 前缀恢复 e2e 打通；
+    ④ `CostAwareOffloadPolicy` 硬编码 block_size=16 → 参数化；⑤
+    `chunked_prefill=False` 被 token 预算静默截断（失去 v0 整段语义）→ 修正。
+    新增回归测试 2 个（总数 62→64）。
 
 ## 5. 已知限制（= TODO 的来源）
 

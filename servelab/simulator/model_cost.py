@@ -12,7 +12,6 @@ itself part of the research (roadmap #5).
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass

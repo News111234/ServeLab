@@ -10,12 +10,12 @@ engine's step() loop already yields per-token deltas to build it on.
 
 import argparse
 import uuid
-from typing import List, Optional
+from typing import List
 
 from fastapi import FastAPI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from ..config import CacheConfig, ModelConfig, SchedulerConfig
+from ..config import CacheConfig, SchedulerConfig
 from ..engine.engine import LLMEngine
 from ..engine.sampling_params import SamplingParams
 from ..models.loader import load_model

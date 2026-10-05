@@ -23,7 +23,7 @@ def worker(rank, world, init_file, model_path, prompt_token_ids, max_tokens):
     from servelab.parallel.layers import GlooCollective
 
     collective = GlooCollective(rank, world, f"file://{init_file}")
-    _, state_path = None, model_path
+    _, _state_path = None, model_path
     import json
     with open(os.path.join(model_path, "config.json")) as f:
         hf_cfg = json.load(f)

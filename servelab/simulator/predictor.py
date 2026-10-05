@@ -6,8 +6,6 @@ an upper bound; anything smarter than the online baselines below is
 publishable material (cf. S3: NeurIPS'23, Andes, response-length perception).
 """
 
-import collections
-from typing import Optional
 
 from ..engine.sequence import Sequence
 
